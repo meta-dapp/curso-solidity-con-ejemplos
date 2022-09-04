@@ -19,6 +19,16 @@ contract DepositarCrypto {
             cuenta.moneda = moneda;
     }
 
+    function retirar(uint256 cantidad, bytes10 moneda, address payable wallet) external {
+        Cuenta storage cuenta = cuentas[msg.sender][moneda];
+        require(cuenta.saldo >= cantidad, "Saldo insuficiente");
+
+        (bool success,) = wallet.call{value: cantidad}("");
+        require(success, "No se ha realizado el retiro");
+
+        cuenta.saldo -= cantidad;
+    }
+
     function saldo(bytes10 moneda) external view returns(uint256){
         return cuentas[msg.sender][moneda].saldo;
     }
